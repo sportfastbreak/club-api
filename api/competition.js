@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   try {
     const competitionPath =
-      req.query.path || "competitions/2025-2026/national/1/"
+      req.query.path || "competities/2025-2026/occitanie/regional/2c/"
 
     const url = `https://api.liguesdefoot.fr/${competitionPath}`
 
