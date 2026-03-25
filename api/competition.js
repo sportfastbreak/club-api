@@ -7,7 +7,7 @@ export default async function handler(req, res) {
 
     const response = await fetch(url, {
       headers: {
-        "X-API-Key": "LIGUESDEFOOT_API_KEY",
+        "X-API-Key": process.env.LIGUESDEFOOT_API_KEY,
       },
     })
 
