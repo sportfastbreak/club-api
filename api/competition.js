@@ -5,40 +5,35 @@ export default async function handler(req, res) {
 
     const url = `https://api.liguesdefoot.fr/${competitionPath}`
 
+    const apiKey = process.env.LIGUESDEFOOT_API_KEY
+
+    if (!apiKey) {
+      return res.status(500).json({
+        error: "Variable d'environnement manquante",
+        missing: "LIGUESDEFOOT_API_KEY",
+      })
+    }
+
     const response = await fetch(url, {
+      method: "GET",
       headers: {
-        "X-API-Key": process.env.LIGUESDEFOOT_API_KEY,
+        "X-API-Key": apiKey,
+        Accept: "application/json",
       },
     })
 
     const text = await response.text()
 
-    if (!response.ok) {
-      return res.status(response.status).json({
-        error: "Erreur API externe",
-        status: response.status,
-        body: text,
-        url,
-      })
-    }
-
-    let data
-    try {
-      data = JSON.parse(text)
-    } catch (e) {
-      return res.status(500).json({
-        error: "Réponse non JSON",
-        body: text,
-        url,
-      })
-    }
-
-    return res.status(200).json(data)
+    return res.status(response.status).json({
+      requestedUrl: url,
+      status: response.status,
+      ok: response.ok,
+      bodyPreview: text.slice(0, 500),
+    })
   } catch (error) {
     return res.status(500).json({
       error: "Erreur serveur",
       message: error.message,
-      stack: error.stack,
     })
   }
 }
