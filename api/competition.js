@@ -7,7 +7,7 @@ export default async function handler(req, res) {
 
     const response = await fetch(url, {
       headers: {
-        "X-API-Key": "8z2q7q4f7ryfjxho5cnyfi0caa2s7tavV",
+        "X-API-Key": "LIGUESDEFOOT_API_KEY",
       },
     })
 
