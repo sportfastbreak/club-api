@@ -52,14 +52,14 @@ export default async function handler(req, res) {
 
     const standing =
       (data.leagueTable || []).find(
-        (team) => normalize(team.name) === clubNormalized
+        (team) => normalize(team.name).includes(clubNormalized)
       ) || null
 
     const lastResults = (data.results || [])
       .filter(
         (match) =>
-          normalize(match.home) === clubNormalized ||
-          normalize(match.away) === clubNormalized
+          normalize(match.home).includes(clubNormalized) ||
+          normalize(match.away).includes(clubNormalized)
       )
       .sort((a, b) => new Date(b.date) - new Date(a.date))
       .slice(0, 5)
@@ -67,8 +67,8 @@ export default async function handler(req, res) {
     const nextMatches = (data.programme || [])
       .filter(
         (match) =>
-          normalize(match.home) === clubNormalized ||
-          normalize(match.away) === clubNormalized
+          normalize(match.home).includes(clubNormalized) ||
+          normalize(match.away).includes(clubNormalized)
       )
       .sort((a, b) => new Date(a.date) - new Date(b.date))
       .slice(0, 5)
