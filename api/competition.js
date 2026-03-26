@@ -3,16 +3,15 @@ export default async function handler(req, res) {
     const competitionPath =
       req.query.path || "competities/2025-2026/occitanie/regional/2c/"
 
-    const url = `https://api.liguesdefoot.fr/${competitionPath}`
-
     const apiKey = process.env.LIGUESDEFOOT_API_KEY
 
     if (!apiKey) {
       return res.status(500).json({
         error: "Variable d'environnement manquante",
-        missing: "LIGUESDEFOOT_API_KEY",
       })
     }
+
+    const url = `https://api.liguesdefoot.fr/${competitionPath}`
 
     const response = await fetch(url, {
       method: "GET",
@@ -24,12 +23,24 @@ export default async function handler(req, res) {
 
     const text = await response.text()
 
-    return res.status(response.status).json({
-      requestedUrl: url,
-      status: response.status,
-      ok: response.ok,
-      bodyPreview: text.slice(0, 500),
-    })
+    let data
+    try {
+      data = JSON.parse(text)
+    } catch {
+      return res.status(500).json({
+        error: "Réponse API non JSON",
+        bodyPreview: text.slice(0, 500),
+      })
+    }
+
+    if (data["401"]) {
+      return res.status(401).json({
+        error: "Unauthorized",
+        details: data["401"],
+      })
+    }
+
+    return res.status(200).json(data)
   } catch (error) {
     return res.status(500).json({
       error: "Erreur serveur",
