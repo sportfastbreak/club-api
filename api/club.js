@@ -96,6 +96,7 @@ const programme = Array.isArray(data.programme) ? data.programme : []
       lastResults,
       nextMatches,
       debug: {
+        rootkeys,
         leagueTableCount: leagueTable.length,
         resultsCount: results.length,
         programmeCount: programme.length,
