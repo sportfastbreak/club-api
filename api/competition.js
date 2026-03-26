@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   try {
     const competitionPath =
-      req.query.path || "clubs/c/cornebarrieu/"
+      req.query.path || "competities/2025-2026/occitanie/regional/2c/"
 
     const apiKey = process.env.LIGUESDEFOOT_API_KEY
 
