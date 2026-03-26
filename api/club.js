@@ -47,37 +47,57 @@ export default async function handler(req, res) {
       })
     }
 
-    const normalize = (value) => (value || "").toLowerCase().trim()
+    const normalize = (value) =>
+      (value || "")
+        .toString()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim()
+
     const clubNormalized = normalize(clubName)
 
-    const standing =
-      (data.leagueTable || []).find(
-        (team) => normalize(team.name).includes(clubNormalized)
-      ) || null
-
-    const lastResults = (data.results || [])
-      .filter(
-        (match) =>
-          normalize(match.home).includes(clubNormalized) ||
-          normalize(match.away).includes(clubNormalized)
+    const matchesClub = (value) => {
+      const normalizedValue = normalize(value)
+      return (
+        normalizedValue === clubNormalized ||
+        normalizedValue.includes(clubNormalized) ||
+        clubNormalized.includes(normalizedValue)
       )
+    }
+
+    const leagueTable = Array.isArray(data.leagueTable) ? data.leagueTable : []
+    const results = Array.isArray(data.results) ? data.results : []
+    const programme = Array.isArray(data.programme) ? data.programme : []
+
+    const standing =
+      leagueTable.find((team) => matchesClub(team.name)) || null
+
+    const lastResults = results
+      .filter((match) => matchesClub(match.home) || matchesClub(match.away))
       .sort((a, b) => new Date(b.date) - new Date(a.date))
       .slice(0, 5)
 
-    const nextMatches = (data.programme || [])
-      .filter(
-        (match) =>
-          normalize(match.home).includes(clubNormalized) ||
-          normalize(match.away).includes(clubNormalized)
-      )
+    const nextMatches = programme
+      .filter((match) => matchesClub(match.home) || matchesClub(match.away))
       .sort((a, b) => new Date(a.date) - new Date(b.date))
       .slice(0, 5)
 
     return res.status(200).json({
       club: clubName,
+      clubNormalized,
       standing,
       lastResults,
       nextMatches,
+      debug: {
+        leagueTableCount: leagueTable.length,
+        resultsCount: results.length,
+        programmeCount: programme.length,
+        sampleTeamNames: leagueTable.slice(0, 12).map((team) => ({
+          raw: team.name,
+          normalized: normalize(team.name),
+        })),
+      },
     })
   } catch (error) {
     return res.status(500).json({
