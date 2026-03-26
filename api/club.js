@@ -47,32 +47,37 @@ export default async function handler(req, res) {
       })
     }
 
-    const normalize = (value) =>
-      (value || "").toLowerCase().trim()
-
+    const normalize = (value) => (value || "").toLowerCase().trim()
     const clubNormalized = normalize(clubName)
 
-    const standing = (data.leagueTable || []).find(
-      (team) => normalize(team.name) === clubNormalized
-    )
+    const standing =
+      (data.leagueTable || []).find(
+        (team) => normalize(team.name) === clubNormalized
+      ) || null
 
-    const lastResults = (data.results || []).filter(
-      (match) =>
-        normalize(match.home) === clubNormalized ||
-        normalize(match.away) === clubNormalized
-    )
+    const lastResults = (data.results || [])
+      .filter(
+        (match) =>
+          normalize(match.home) === clubNormalized ||
+          normalize(match.away) === clubNormalized
+      )
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .slice(0, 5)
 
-    const nextMatches = (data.programme || []).filter(
-      (match) =>
-        normalize(match.home) === clubNormalized ||
-        normalize(match.away) === clubNormalized
-    )
+    const nextMatches = (data.programme || [])
+      .filter(
+        (match) =>
+          normalize(match.home) === clubNormalized ||
+          normalize(match.away) === clubNormalized
+      )
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      .slice(0, 5)
 
     return res.status(200).json({
       club: clubName,
-      standing: standing || null,
-      lastResults: lastResults.slice(0, 5),
-      nextMatches: nextMatches.slice(0, 5),
+      standing,
+      lastResults,
+      nextMatches,
     })
   } catch (error) {
     return res.status(500).json({
