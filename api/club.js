@@ -65,10 +65,16 @@ export default async function handler(req, res) {
         clubNormalized.includes(normalizedValue)
       )
     }
+const rootKeys = Object.keys(data)
 
-    const leagueTable = Array.isArray(data.leagueTable) ? data.leagueTable : []
-    const results = Array.isArray(data.results) ? data.results : []
-    const programme = Array.isArray(data.programme) ? data.programme : []
+const leagueTable = Array.isArray(data.leagueTable)
+  ? data.leagueTable
+  : Array.isArray(data.leaguetable)
+  ? data.leaguetable
+  : []
+
+const results = Array.isArray(data.results) ? data.results : []
+const programme = Array.isArray(data.programme) ? data.programme : []
 
     const standing =
       leagueTable.find((team) => matchesClub(team.name)) || null
