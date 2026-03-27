@@ -47,6 +47,8 @@ export default async function handler(req, res) {
       })
     }
 
+    const payload = data.competition || data
+
     const normalize = (value) =>
       (value || "")
         .toString()
@@ -65,16 +67,15 @@ export default async function handler(req, res) {
         clubNormalized.includes(normalizedValue)
       )
     }
-const rootKeys = Object.keys(data)
 
-const leagueTable = Array.isArray(data.leagueTable)
-  ? data.leagueTable
-  : Array.isArray(data.leaguetable)
-  ? data.leaguetable
-  : []
+    const leagueTable = Array.isArray(payload.leagueTable)
+      ? payload.leagueTable
+      : Array.isArray(payload.leaguetable)
+      ? payload.leaguetable
+      : []
 
-const results = Array.isArray(data.results) ? data.results : []
-const programme = Array.isArray(data.programme) ? data.programme : []
+    const results = Array.isArray(payload.results) ? payload.results : []
+    const programme = Array.isArray(payload.programme) ? payload.programme : []
 
     const standing =
       leagueTable.find((team) => matchesClub(team.name)) || null
@@ -96,15 +97,13 @@ const programme = Array.isArray(data.programme) ? data.programme : []
       lastResults,
       nextMatches,
       debug: {
-  rootKeys,
-  leagueTableCount: leagueTable.length,
-  resultsCount: results.length,
-  programmeCount: programme.length,
-  sampleTeamNames: leagueTable.slice(0, 12).map((team) => ({
-    raw: team.name,
-    normalized: normalize(team.name),
-  })),
-},
+        rootKeys: Object.keys(data),
+        payloadKeys: Object.keys(payload),
+        leagueTableCount: leagueTable.length,
+        resultsCount: results.length,
+        programmeCount: programme.length,
+        sampleTeamNames: leagueTable.slice(0, 10).map((team) => team.name),
+      },
     })
   } catch (error) {
     return res.status(500).json({
