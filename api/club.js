@@ -96,15 +96,15 @@ const programme = Array.isArray(data.programme) ? data.programme : []
       lastResults,
       nextMatches,
       debug: {
-        rootkeys,
-        leagueTableCount: leagueTable.length,
-        resultsCount: results.length,
-        programmeCount: programme.length,
-        sampleTeamNames: leagueTable.slice(0, 12).map((team) => ({
-          raw: team.name,
-          normalized: normalize(team.name),
-        })),
-      },
+  rootKeys,
+  leagueTableCount: leagueTable.length,
+  resultsCount: results.length,
+  programmeCount: programme.length,
+  sampleTeamNames: leagueTable.slice(0, 12).map((team) => ({
+    raw: team.name,
+    normalized: normalize(team.name),
+  })),
+},
     })
   } catch (error) {
     return res.status(500).json({
