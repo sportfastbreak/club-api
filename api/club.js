@@ -75,6 +75,79 @@ export default async function handler(req, res) {
       : []
 
     const results = Array.isArray(payload.results) ? payload.results : []
+
+    const programme = Array.isArray(payload.programme)
+      ? payload.programme
+      : Array.isArray(payload.program)
+      ? payload.program
+      : []
+
+    const standing =
+      leagueTable.find((team) => matchesClub(team.name)) || null
+
+    const lastResults = results
+      .filter((match) => matchesClub(match.home) || matchesClub(match.away))
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .slice(0, 5)
+
+    const nextMatches = programme
+      .filter((match) => matchesClub(match.home) || matchesClub(match.away))
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      .slice(0, 5)
+
+    return res.status(200).json({
+      club: clubName,
+      standing,
+      lastResults,
+      nextMatches,
+    })
+  } catch (error) {
+    return res.status(500).json({
+      error: "Erreur serveur",
+      message: error.message,
+    })
+  }
+}      return res.status(500).json({
+        error: "Réponse API non JSON",
+        bodyPreview: text.slice(0, 500),
+      })
+    }
+
+    if (data["401"]) {
+      return res.status(401).json({
+        error: "Unauthorized",
+        details: data["401"],
+      })
+    }
+
+    const payload = data.competition || data
+
+    const normalize = (value) =>
+      (value || "")
+        .toString()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim()
+
+    const clubNormalized = normalize(clubName)
+
+    const matchesClub = (value) => {
+      const normalizedValue = normalize(value)
+      return (
+        normalizedValue === clubNormalized ||
+        normalizedValue.includes(clubNormalized) ||
+        clubNormalized.includes(normalizedValue)
+      )
+    }
+
+    const leagueTable = Array.isArray(payload.leagueTable)
+      ? payload.leagueTable
+      : Array.isArray(payload.leaguetable)
+      ? payload.leaguetable
+      : []
+
+    const results = Array.isArray(payload.results) ? payload.results : []
     const programme = Array.isArray(payload.programme) ? payload.programme : []
 
     const standing =
