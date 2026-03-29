@@ -9,7 +9,7 @@ module.exports = async function handler(req, res) {
 
   try {
     const competitionPath =
-      req.query.path || "competities/2025-2026/occitanie/regional/2c/"
+      req.query.path || "competities/2025-2026/occitanie/haute-garonne/3c/"
     const clubName = req.query.club
 
     if (!clubName) {
